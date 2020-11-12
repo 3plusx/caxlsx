@@ -37,6 +37,7 @@ module Axlsx
   require 'axlsx/drawing/chart'
   require 'axlsx/drawing/pie_3D_chart'
   require 'axlsx/drawing/pie_chart'
+  require 'axlsx/drawing/doughnut_3D_chart'
   require 'axlsx/drawing/bar_3D_chart'
   require 'axlsx/drawing/doughnut_3D_chart'
   require 'axlsx/drawing/bar_chart'
