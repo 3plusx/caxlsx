@@ -1,5 +1,9 @@
 # Caxlsx (Community Continued Version)
 [![Build Status](https://travis-ci.com/caxlsx/caxlsx.svg?branch=master)](https://travis-ci.com/caxlsx/caxlsx)
+[![Gem
+Version](https://badge.fury.io/rb/caxlsx.svg)](http://badge.fury.io/rb/caxlsx)
+![Total downloads](http://ruby-gem-downloads-badge.herokuapp.com/caxlsx?type=total)
+![Downloads for 3.0.4 (latest)](http://ruby-gem-downloads-badge.herokuapp.com/caxlsx/3.0.4?label=downloads%203.0.4)
 
 ## Notice: Community Axlsx Organization
 

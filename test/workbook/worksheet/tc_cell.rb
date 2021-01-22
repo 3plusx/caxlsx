@@ -71,6 +71,13 @@ class TestCell < Test::Unit::TestCase
     assert_equal(@c.value, now.to_time)
   end
 
+  def test_date
+    @c.type = :date
+    now = Time.now
+    @c.value = now
+    assert_equal(@c.value, now.to_date)
+  end
+
   def test_style
     assert_raise(ArgumentError, "must reject invalid style indexes") { @c.style=@c.row.worksheet.workbook.styles.cellXfs.size }
     assert_nothing_raised("must allow valid style index changes") {@c.style=1}
@@ -118,6 +125,31 @@ class TestCell < Test::Unit::TestCase
     assert_equal(@c.send(:cell_type_from_value, 1.0/10**6), :float)
     assert_equal(@c.send(:cell_type_from_value, Axlsx::RichText.new), :richtext)
     assert_equal(:iso_8601, @c.send(:cell_type_from_value, '2008-08-30T01:45:36.123+09:00'))
+  end
+
+  def test_cell_type_from_value_looks_like_number_but_is_not
+    mimic_number = Class.new do
+      def initialize(to_s_value)
+        @to_s_value = to_s_value
+      end
+
+      def to_s
+        @to_s_value
+      end
+    end
+
+    number_strings = [
+      '1',
+      '1234567890',
+      '1.0',
+      '1e1',
+      '0',
+      "1e#{Float::MIN_10_EXP}"
+    ]
+
+    number_strings.each do |number_string|
+      assert_equal(@c.send(:cell_type_from_value, mimic_number.new(number_string)), :string)
+    end
   end
 
   def test_cast_value
