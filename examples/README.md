@@ -44,10 +44,12 @@ Types:
 * [Line chart (3D)](3d_line_chart_example.md)
 * [Pie chart (3D)](3d_pie_chart_example.md)
 * [Scatter chart](scatter_chart_example.md)
+* [Stacked bar chart](stacked_bar_chart_example.md)
 
 Customizations:
 * [Chart colors](chart_colors_example.md)
 * [Hide gridlines](hide_gridlines_in_chart_example.md)
+* [Chart series color](chart_series_example.md)
 
 ### Columns
 
