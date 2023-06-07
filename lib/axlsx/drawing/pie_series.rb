@@ -1,12 +1,11 @@
-# encoding: UTF-8
-module Axlsx
+# frozen_string_literal: true
 
+module Axlsx
   # A PieSeries defines the data and labels and explosion for pie charts series.
   # @note The recommended way to manage series is to use Chart#add_series
   # @see Worksheet#add_chart
   # @see Chart#add_series
   class PieSeries < Series
-
     # The data for this series.
     # @return [SimpleTypedList]
     attr_reader :data
@@ -28,11 +27,11 @@ module Axlsx
     # @option options [String] title
     # @option options [Integer] explosion
     # @param [Chart] chart
-    def initialize(chart, options={})
+    def initialize(chart, options = {})
       @explosion = nil
       @colors = []
       super(chart, options)
-      self.labels = AxDataSource.new(:data => options[:labels]) unless options[:labels].nil?
+      self.labels = AxDataSource.new(data: options[:labels]) unless options[:labels].nil?
       self.data = NumDataSource.new(options) unless options[:data].nil?
     end
 
@@ -45,14 +44,14 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       super(str) do
-        str << '<c:explosion val="' + @explosion.to_s + '"/>' unless @explosion.nil?
+        str << '<c:explosion val="' << @explosion.to_s << '"/>' unless @explosion.nil?
         colors.each_with_index do |c, index|
           str << '<c:dPt>'
-          str << ('<c:idx val="' << index.to_s << '"/>')
+          str << '<c:idx val="' << index.to_s << '"/>'
           str << '<c:spPr><a:solidFill>'
-          str << ('<a:srgbClr val="' << c << '"/>')
+          str << '<a:srgbClr val="' << c << '"/>'
           str << '</a:solidFill></c:spPr></c:dPt>'
         end
         @labels.to_xml_string str unless @labels.nil?
@@ -68,7 +67,5 @@ module Axlsx
 
     # assigns the labels for this series
     def labels=(v) DataTypeValidator.validate "Series.labels", [AxDataSource], v; @labels = v; end
-
   end
-
 end

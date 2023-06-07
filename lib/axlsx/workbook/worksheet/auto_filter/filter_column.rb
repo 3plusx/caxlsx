@@ -1,10 +1,11 @@
+# frozen_string_literal: true
+
 module Axlsx
   # The filterColumn collection identifies a particular column in the AutoFilter
   # range and specifies filter information that has been applied to this column.
   # If a column in the AutoFilter range has no criteria specified,
   # then there is no corresponding filterColumn collection expressed for that column.
   class FilterColumn
-
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
 
@@ -17,7 +18,7 @@ module Axlsx
     # @option [Boolean] show_button @see show_button
     def initialize(col_id, filter_type, options = {})
       RestrictionValidator.validate 'FilterColumn.filter', FILTERS, filter_type
-      #Axlsx::validate_unsigned_int(col_id)
+      # Axlsx::validate_unsigned_int(col_id)
       self.col_id = col_id
       parse_options options
       @filter = Axlsx.const_get(Axlsx.camel(filter_type)).new(options)
@@ -27,7 +28,7 @@ module Axlsx
     serializable_attributes :col_id, :hidden_button, :show_button
 
     # Allowed filters
-    FILTERS =  [:filters] #, :top10, :custom_filters, :dynamic_filters, :color_filters, :icon_filters]
+    FILTERS = [:filters].freeze # , :top10, :custom_filters, :dynamic_filters, :color_filters, :icon_filters]
 
     # Zero-based index indicating the AutoFilter column to which this filter information applies.
     # @return [Integer]
@@ -52,7 +53,7 @@ module Axlsx
     end
 
     # Sets the col_id attribute for this filter column.
-    # @param [Integer | Cell] column_index The zero based index of the column to which this filter applies. 
+    # @param [Integer | Cell] column_index The zero based index of the column to which this filter applies.
     #                         When you specify a cell, the column index will be read off the cell
     # @return [Integer]
     def col_id=(column_index)
@@ -65,8 +66,9 @@ module Axlsx
     # @param [Array] row A row from a worksheet that needs to be
     # filtered.
     def apply(row, offset)
-      row.hidden = @filter.apply(row.cells[offset+col_id.to_i])
+      row.hidden = @filter.apply(row.cells[offset + col_id.to_i])
     end
+
     # @param [Boolean] hidden Flag indicating whether the AutoFilter button for this column is hidden.
     # @return [Boolean]
     def hidden_button=(hidden)
@@ -85,8 +87,10 @@ module Axlsx
     end
 
     # Serialize the object to xml
-    def to_xml_string(str='')
-      str << "<filterColumn #{serialized_attributes}>"
+    def to_xml_string(str = +'')
+      str << '<filterColumn '
+      serialized_attributes(str)
+      str << '>'
       @filter.to_xml_string(str)
       str << "</filterColumn>"
     end

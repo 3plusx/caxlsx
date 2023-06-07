@@ -1,8 +1,8 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 module Axlsx
   # the ValAxis class defines a chart value axis.
   class ValAxis < Axis
-
     # This element specifies how the value axis crosses the category axis.
     # must be one of [:between, :midCat]
     # @return [Symbol]
@@ -11,7 +11,7 @@ module Axlsx
 
     # Creates a new ValAxis object
     # @option options [Symbol] crosses_between
-    def initialize(options={})
+    def initialize(options = {})
       self.cross_between = :between
       super(options)
     end
@@ -26,12 +26,11 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<c:valAx>'
       super(str)
-      str << ('<c:crossBetween val="' << @cross_between.to_s << '"/>')
+      str << '<c:crossBetween val="' << @cross_between.to_s << '"/>'
       str << '</c:valAx>'
     end
-
   end
 end

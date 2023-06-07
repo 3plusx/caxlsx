@@ -1,12 +1,12 @@
-# encoding: UTF-8
-module Axlsx
-  #A CatAxis object defines a chart category axis
-  class CatAxis < Axis
+# frozen_string_literal: true
 
+module Axlsx
+  # A CatAxis object defines a chart category axis
+  class CatAxis < Axis
     # Creates a new CatAxis object
     # @option options [Integer] tick_lbl_skip
     # @option options [Integer] tick_mark_skip
-    def initialize(options={})
+    def initialize(options = {})
       @tick_lbl_skip = 1
       @tick_mark_skip = 1
       self.auto = 1
@@ -42,7 +42,7 @@ module Axlsx
     alias :tickMarkSkip :tick_mark_skip
 
     # regex for validating label offset
-    LBL_OFFSET_REGEX = /0*(([0-9])|([1-9][0-9])|([1-9][0-9][0-9])|1000)/
+    LBL_OFFSET_REGEX = /0*(([0-9])|([1-9][0-9])|([1-9][0-9][0-9])|1000)/.freeze
 
     # @see tick_lbl_skip
     def tick_lbl_skip=(v) Axlsx::validate_unsigned_int(v); @tick_lbl_skip = v; end
@@ -68,18 +68,15 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<c:catAx>'
       super(str)
-      str << ('<c:auto val="' << @auto.to_s << '"/>')
-      str << ('<c:lblAlgn val="' << @lbl_algn.to_s << '"/>')
-      str << ('<c:lblOffset val="' << @lbl_offset.to_i.to_s << '"/>')
-      str << ('<c:tickLblSkip val="' << @tick_lbl_skip.to_s << '"/>')
-      str << ('<c:tickMarkSkip val="' << @tick_mark_skip.to_s << '"/>')
+      str << '<c:auto val="' << @auto.to_s << '"/>'
+      str << '<c:lblAlgn val="' << @lbl_algn.to_s << '"/>'
+      str << '<c:lblOffset val="' << @lbl_offset.to_i.to_s << '"/>'
+      str << '<c:tickLblSkip val="' << @tick_lbl_skip.to_s << '"/>'
+      str << '<c:tickMarkSkip val="' << @tick_mark_skip.to_s << '"/>'
       str << '</c:catAx>'
     end
-
   end
-
-
 end

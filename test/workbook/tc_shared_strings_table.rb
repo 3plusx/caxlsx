@@ -1,15 +1,16 @@
-require 'tc_helper.rb'
+# frozen_string_literal: true
+
+require 'tc_helper'
 
 class TestSharedStringsTable < Test::Unit::TestCase
-
   def setup
-    @p = Axlsx::Package.new :use_shared_strings=>true
+    @p = Axlsx::Package.new use_shared_strings: true
 
     ws = @p.workbook.add_worksheet
     ws.add_row ['a', 1, 'b']
     ws.add_row ['b', 1, 'c']
     ws.add_row ['c', 1, 'd']
-    ws.rows.last.add_cell('b', :type => :text)
+    ws.rows.last.add_cell('b', type: :text)
   end
 
   def test_workbook_has_shared_strings
@@ -18,17 +19,20 @@ class TestSharedStringsTable < Test::Unit::TestCase
 
   def test_count
     sst = @p.workbook.shared_strings
-    assert_equal(sst.count, 7)
+
+    assert_equal(7, sst.count)
   end
 
   def test_unique_count
     sst = @p.workbook.shared_strings
-    assert_equal(sst.unique_count, 4)
+
+    assert_equal(4, sst.unique_count)
   end
 
   def test_uses_workbook_xml_space
     assert_equal(@p.workbook.xml_space, @p.workbook.shared_strings.xml_space)
     @p.workbook.xml_space = :default
+
     assert_equal(:default, @p.workbook.shared_strings.xml_space)
   end
 
@@ -40,18 +44,19 @@ class TestSharedStringsTable < Test::Unit::TestCase
       puts error.message
       errors << error
     end
-    assert_equal(errors.size, 0, "sharedStirngs.xml Invalid" + errors.map{ |e| e.message }.to_s)
+
+    assert_equal(0, errors.size, "sharedStirngs.xml Invalid#{errors.map(&:message)}")
   end
 
   def test_remove_control_characters_in_xml_serialization
-    nasties =  "hello\x10\x00\x1C\x1Eworld"
+    nasties = "hello\x10\x00\x1C\x1Eworld"
     @p.workbook.worksheets[0].add_row [nasties]
 
     # test that the nasty string was added to the shared strings
-    assert @p.workbook.shared_strings.unique_cells.has_key?(nasties)
+    assert @p.workbook.shared_strings.unique_cells.key?(nasties)
 
     # test that none of the control characters are in the XML output for shared strings
-    assert_no_match(/#{Axlsx::CONTROL_CHARS}/, @p.workbook.shared_strings.to_xml_string)
+    assert_no_match(/#{Axlsx::CONTROL_CHARS}/o, @p.workbook.shared_strings.to_xml_string)
 
     # assert that the shared string was normalized to remove the control characters
     assert_not_nil @p.workbook.shared_strings.to_xml_string.index("helloworld")

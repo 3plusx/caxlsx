@@ -1,2 +1,3 @@
-# encoding: UTF-8
-require 'axlsx.rb'
+# frozen_string_literal: true
+
+require 'axlsx'

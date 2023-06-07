@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Options for printing a worksheet. All options are boolean and false by default.
   #
@@ -5,7 +7,6 @@ module Axlsx
   # @see Worksheet#print_options
   # @see Worksheet#initialize
   class PrintOptions
-
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
     include Axlsx::Accessors
@@ -32,7 +33,7 @@ module Axlsx
     # @note As all attributes default to "false" according to the xml schema definition, the generated xml includes only those attributes that are set to true.
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag 'printOptions', str
     end
   end

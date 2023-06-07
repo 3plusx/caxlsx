@@ -1,22 +1,21 @@
 # Caxlsx (Community Continued Version)
-[![Build Status](https://travis-ci.com/caxlsx/caxlsx.svg?branch=master)](https://travis-ci.com/caxlsx/caxlsx)
-[![Gem
-Version](https://badge.fury.io/rb/caxlsx.svg)](http://badge.fury.io/rb/caxlsx)
-![Total downloads](http://ruby-gem-downloads-badge.herokuapp.com/caxlsx?type=total)
-![Downloads for 3.1.0 (latest)](http://ruby-gem-downloads-badge.herokuapp.com/caxlsx/3.1.0?label=downloads%203.1.0)
+[![Test](https://github.com/caxlsx/caxlsx/actions/workflows/test.yml/badge.svg)](https://github.com/caxlsx/caxlsx/actions/workflows/test.yml)
+[![RuboCop](https://github.com/caxlsx/caxlsx/actions/workflows/rubocop.yml/badge.svg)](https://github.com/caxlsx/caxlsx/actions/workflows/rubocop.yml)
+[![Gem Version](https://badge.fury.io/rb/caxlsx.svg)](https://badge.fury.io/rb/caxlsx)
+![downloads](https://img.shields.io/gem/dt/caxlsx?label=downloads)
 
 ## Notice: Community Axlsx Organization
 
-To better maintain the Axlsx ecosystem, all related gems have been forked or moved to the following community organization: 
+To better maintain the Axlsx ecosystem, all related gems have been forked or moved to the following community organization:
 
-http://github.com/caxlsx
+https://github.com/caxlsx
 
 [Join the Caxlsx Slack channel](https://join.slack.com/t/caxlsx/shared_invite/enQtOTI5OTM0MzI1Njk5LTBlMDQzNDk2YzkwODMxMmVkODMyYzJiZGU5NTQ3YTg5NTBlN2IwZTlmNTRjNzhiY2E0MDY2OTEyYmFlODI5NjA)
 
 ## Synopsis
 
 Axlsx is an Office Open XML Spreadsheet generator for the Ruby programming language.
-With Axlsx you can create excel worksheets with charts, images (with links), automated and fixed column widths, customized styles, functions, tables, conditional formatting, print options, comments, merged cells, auto filters, file and stream serialization  as well as full schema validation. Axlsx excels at helping you generate beautiful Office Open XML Spreadsheet documents without having to understand the entire ECMA specification.
+With Axlsx you can create Excel worksheets with charts, images (with links), automated and fixed column widths, customized styles, functions, tables, conditional formatting, print options, comments, merged cells, auto filters, file and stream serialization  as well as full schema validation. Axlsx excels at helping you generate beautiful Office Open XML Spreadsheet documents without having to understand the entire ECMA specification.
 
 ![Screen 1](https://github.com/caxlsx/caxlsx/raw/master/examples/sample.png)
 
@@ -74,6 +73,8 @@ and Numbers
 gem 'caxlsx'
 ```
 
+**Supported Ruby versions:** Caxlsx supports Ruby 2.6 and newer.
+
 ## Usage
 
 Here's a teaser that kicks about 2% of what the gem can do.
@@ -120,8 +121,26 @@ Currently the following additional gems are available:
   * Provides a `.axlsx` renderer to Rails so you can move all your spreadsheet code from your controller into view files.
 - [activeadmin-caxlsx](https://github.com/caxlsx/activeadmin-caxlsx)
   * An Active Admin plugin that includes DSL to create downloadable reports.
-- [axlsx_styler](https://github.com/axlsx-styler-gem/axlsx_styler)
-  * Allows you to build clean and maintainable styles for your axlsx spreadsheets. Build your spreadsheeet with data and then apply styles later.
+
+## Security
+
+To prevent [Formula Injection](https://www.owasp.org/index.php/CSV_Injection) vulnerabilities, set the following in an initializer:
+
+```ruby
+Axlsx.escape_formulas = true
+```
+
+Then, set the following on each cell you'd like to add a formula:
+
+```ruby
+cell.escape_formulas = false
+```
+
+Refer to examples/escape_formula.md for how to set `escape_formulas` on the workbook, worksheet, row and/or cell level.
+
+**Important:** The global setting `Axlsx.escape_formulas = true` will become the default in the next major release (Axlsx 4.0).
+If you do not wish to set `Axlsx.escape_formulas = true` now, at a minimum, please set `Axlsx.escape_formulas = false` to
+ensure continuity when upgrading.
 
 ## Known Software Interoperability Issues
 
@@ -155,10 +174,6 @@ p.use_shared_strings = true
 p.serialize('simple.xlsx')
 ```
 
-## Known Bugs
-
-There’s a [list of known bugs](https://github.com/caxlsx/caxlsx/issues?q=label%3A%22known+bug%22). (If you want to contribute to caxlsx, this is a good place to start!)
-
 ## Contributing
 
 See [CONTRIBUTING.md](https://github.com/caxlsx/caxlsx/blob/master/CONTRIBUTING.md)
@@ -167,6 +182,6 @@ See [CONTRIBUTING.md](https://github.com/caxlsx/caxlsx/blob/master/CONTRIBUTING.
 
 Originally created by Randy Morgan - @randym
 
-Forked in 2019, to enable the community to maintain the Axlsx ecosystem - http://github.com/caxlsx
+Forked in 2019, to enable the community to maintain the Axlsx ecosystem - https://github.com/caxlsx
 
 Open source software is a community effort. None of this could have been done without the help of [our Contributors](https://github.com/caxlsx/caxlsx/graphs/contributors).

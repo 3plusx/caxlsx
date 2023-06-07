@@ -1,9 +1,9 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 module Axlsx
   # A NumFmt object defines an identifier and formatting code for data in cells.
   # @note The recommended way to manage styles is Styles#add_style
   class NumFmt
-
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
 
@@ -11,7 +11,7 @@ module Axlsx
     # @param [Hash] options Options for the number format object
     # @option [Integer] numFmtId The predefined format id or new format id for this format
     # @option [String] formatCode The format code for this number format
-    def initialize(options={})
+    def initialize(options = {})
       @numFmtId = 0
       @formatCode = ""
       parse_options options
@@ -20,7 +20,7 @@ module Axlsx
     serializable_attributes :formatCode, :numFmtId
 
     # @return [String] The formatting to use for this number format.
-    # @see http://support.microsoft.com/kb/264372
+    # @see https://support.microsoft.com/kb/264372
     attr_reader :formatCode
 
     # @return [Integer] An unsigned integer referencing a standard or custom number format.
@@ -69,18 +69,13 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('numFmt', str)
     end
 
     # Override to avoid removing underscores
-    def serialized_attributes(str = '', additional_attributes = {})
-      attributes = declared_attributes.merge! additional_attributes
-      attributes.each do |key, value|
-        str << "#{Axlsx.camel(key, false)}=\"#{Axlsx.booleanize(value)}\" "
-      end
-      str
+    def serialized_attributes(str = +'', additional_attributes = {})
+      super(str, additional_attributes, false)
     end
-
   end
 end

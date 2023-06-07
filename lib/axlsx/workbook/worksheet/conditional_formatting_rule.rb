@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
+
 module Axlsx
   # Conditional formatting rules specify formulas whose evaluations
   # format cells
@@ -7,7 +8,6 @@ module Axlsx
   # @see Worksheet#add_conditional_formatting
   # @see ConditionalFormattingRule#initialize
   class ConditionalFormattingRule
-
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
 
@@ -26,7 +26,7 @@ module Axlsx
     # @option options [Boolean] stopIfTrue Stop evaluating rules after this rule matches
     # @option options [Symbol]  timePeriod The time period in a date occuring... rule
     # @option options [String] formula The formula to match against in i.e. an equal rule. Use a [minimum, maximum] array for cellIs between/notBetween conditionals.
-    def initialize(options={})
+    def initialize(options = {})
       @color_scale = @data_bar = @icon_set = @formula = nil
       parse_options options
     end
@@ -133,7 +133,6 @@ module Axlsx
     # thisMonth, lastMonth, nextMonth, thisWeek, lastWeek, nextWeek
     attr_reader :timePeriod
 
-
     # colorScale (Color Scale)
     # The color scale to apply to this conditional formatting
     # @return [ColorScale]
@@ -182,7 +181,7 @@ module Axlsx
     # @see timePeriod
     def timePeriod=(v); Axlsx::validate_time_period_type(v); @timePeriod = v end
     # @see formula
-    def formula=(v); [*v].each {|x| Axlsx::validate_string(x) }; @formula = [*v].map { |form| ::CGI.escapeHTML(form) } end
+    def formula=(v); [*v].each { |x| Axlsx::validate_string(x) }; @formula = [*v].map { |form| ::CGI.escapeHTML(form) } end
 
     # @see color_scale
     def color_scale=(v)
@@ -202,15 +201,14 @@ module Axlsx
       @icon_set = v
     end
 
-
     # Serializes the conditional formatting rule
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<cfRule '
       serialized_attributes str
       str << '>'
-      str << ('<formula>' << [*self.formula].join('</formula><formula>') << '</formula>') if @formula
+      str << '<formula>' << [*self.formula].join('</formula><formula>') << '</formula>' if @formula
       @color_scale.to_xml_string(str) if @color_scale && @type == :colorScale
       @data_bar.to_xml_string(str) if @data_bar && @type == :dataBar
       @icon_set.to_xml_string(str) if @icon_set && @type == :iconSet

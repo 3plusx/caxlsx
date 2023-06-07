@@ -1,13 +1,14 @@
-require 'tc_helper.rb'
+# frozen_string_literal: true
+
+require 'tc_helper'
 
 class TestAutoFilter < Test::Unit::TestCase
-
   def setup
     ws = Axlsx::Package.new.workbook.add_worksheet
-    3.times { |index| ws.add_row [1*index,2*index,3*index] }
+    3.times { |index| ws.add_row [1 * index, 2 * index, 3 * index] }
     @auto_filter = ws.auto_filter
     @auto_filter.range = 'A1:C3'
-    @auto_filter.add_column 0, :filters, :filter_items => [1]
+    @auto_filter.add_column 0, :filters, filter_items: [1]
   end
 
   def test_defined_name
@@ -16,6 +17,7 @@ class TestAutoFilter < Test::Unit::TestCase
 
   def test_to_xml_string
     doc = Nokogiri::XML(@auto_filter.to_xml_string)
+
     assert(doc.xpath("autoFilter[@ref='#{@auto_filter.range}']"))
   end
 
@@ -31,8 +33,9 @@ class TestAutoFilter < Test::Unit::TestCase
   end
 
   def test_applya
-    assert_equal nil, @auto_filter.worksheet.rows.last.hidden
+    assert_nil @auto_filter.worksheet.rows.last.hidden
     @auto_filter.apply
-    assert_equal true, @auto_filter.worksheet.rows.last.hidden
+
+    assert @auto_filter.worksheet.rows.last.hidden
   end
 end

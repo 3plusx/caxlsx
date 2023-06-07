@@ -1,23 +1,42 @@
-# encoding: UTF-8
-module Axlsx
+# frozen_string_literal: true
 
+module Axlsx
   # A SimpleTypedList is a type restrictive collection that allows some of the methods from Array and supports basic xml serialization.
   # @private
-  class SimpleTypedList
+  class SimpleTypedList < Array
+    DESTRUCTIVE = [
+      'replace', 'insert', 'collect!', 'map!', 'pop', 'delete_if',
+      'reverse!', 'shift', 'shuffle!', 'slice!', 'sort!', 'uniq!',
+      'unshift', 'zip', 'flatten!', 'fill', 'drop', 'drop_while',
+      'clear'
+    ].freeze
+
+    DESTRUCTIVE.each do |name|
+      undef_method name
+    end
+
+    # We often call index(element) on instances of SimpleTypedList. Thus, we do not want to inherit Array
+    # implementation of == / eql? which walks the elements calling == / eql?. Instead we want the fast
+    # and original versions from BasicObject.
+    alias :== :equal?
+    alias :eql? :equal?
+
     # Creats a new typed list
     # @param [Array, Class] type An array of Class objects or a single Class object
     # @param [String] serialize_as The tag name to use in serialization
     # @raise [ArgumentError] if all members of type are not Class objects
-    def initialize type, serialize_as=nil, start_size = 0
+    def initialize(type, serialize_as = nil, start_size = 0)
+      super(start_size)
+
       if type.is_a? Array
         type.each { |item| raise ArgumentError, "All members of type must be Class objects" unless item.is_a? Class }
         @allowed_types = type
       else
         raise ArgumentError, "Type must be a Class object or array of Class objects" unless type.is_a? Class
+
         @allowed_types = [type]
       end
       @serialize_as = serialize_as unless serialize_as.nil?
-      @list = Array.new(start_size)
     end
 
     # The class constants of allowed types
@@ -38,15 +57,16 @@ module Axlsx
     # Transposes the list (without blowing up like ruby does)
     # any non populated cell in the matrix will be a nil value
     def transpose
-      return @list.clone if @list.size == 0
-      row_count = @list.size
-      max_column_count = @list.map{|row| row.cells.size}.max
+      return clone if size.zero?
+
+      row_count = size
+      max_column_count = map { |row| row.cells.size }.max
       result = Array.new(max_column_count) { Array.new(row_count) }
       # yes, I know it is silly, but that warning is really annoying
       row_count.times do |row_index|
-         max_column_count.times do |column_index|
-          datum = if @list[row_index].cells.size >= max_column_count
-                    @list[row_index].cells[column_index]
+        max_column_count.times do |column_index|
+          datum = if self[row_index].cells.size >= max_column_count
+                    self[row_index].cells[column_index]
                   elsif block_given?
                     yield(column_index, row_index)
                   end
@@ -55,11 +75,11 @@ module Axlsx
       end
       result
     end
-    
+
     # Lock this list at the current size
     # @return [self]
     def lock
-      @locked_at = @list.size
+      @locked_at = size
       self
     end
 
@@ -69,23 +89,17 @@ module Axlsx
       @locked_at = nil
       self
     end
-    
-    def to_ary
-      @list
-    end
-
-    alias :to_a :to_ary
 
     # join operator
-    # @param [Array] v the array to join
+    # @param [Array] other the array to join
     # @raise [ArgumentError] if any of the values being joined are not
     # one of the allowed types
     # @return [SimpleTypedList]
-    def +(v)
-      v.each do |item| 
-        DataTypeValidator.validate :SimpleTypedList_plus, @allowed_types, item
-        @list << item 
+    def +(other)
+      other.each do |item|
+        self << item
       end
+      super
     end
 
     # Concat operator
@@ -94,12 +108,11 @@ module Axlsx
     # @return [Integer] returns the index of the item added.
     def <<(v)
       DataTypeValidator.validate :SimpleTypedList_push, @allowed_types, v
-      @list << v
-      @list.size - 1
-    end 
-    
+      super
+      size - 1
+    end
+
     alias :push :<<
-    
 
     # delete the item from the list
     # @param [Any] v The item to be deleted.
@@ -108,16 +121,17 @@ module Axlsx
     def delete(v)
       return unless include? v
       raise ArgumentError, "Item is protected and cannot be deleted" if protected? index(v)
-      @list.delete v
+
+      super
     end
 
     # delete the item from the list at the index position provided
     # @raise [ArgumentError] if the index is protected by locking
     # @return [Any] The item deleted
     def delete_at(index)
-      @list[index]
       raise ArgumentError, "Item is protected and cannot be deleted" if protected? index
-      @list.delete_at index
+
+      super
     end
 
     # positional assignment. Adds the item at the index specified
@@ -125,11 +139,12 @@ module Axlsx
     # @param [Any] v
     # @raise [ArgumentError] if the index is protected by locking
     # @raise [ArgumentError] if the item is not one of the allowed types
+    # @return [Any] The item added
     def []=(index, v)
       DataTypeValidator.validate :SimpleTypedList_insert, @allowed_types, v
       raise ArgumentError, "Item is protected and cannot be changed" if protected? index
-      @list[index] = v
-      v
+
+      super
     end
 
     # inserts an item at the index specfied
@@ -137,43 +152,29 @@ module Axlsx
     # @param [Any] v
     # @raise [ArgumentError] if the index is protected by locking
     # @raise [ArgumentError] if the index is not one of the allowed types
+    # @return [Any] The item inserted
     def insert(index, v)
       DataTypeValidator.validate :SimpleTypedList_insert, @allowed_types, v
       raise ArgumentError, "Item is protected and cannot be changed" if protected? index
-      @list.insert(index, v)
+
+      super
       v
     end
 
     # determines if the index is protected
     # @param [Integer] index
-    def protected? index
+    def protected?(index)
       return false unless locked_at.is_a? Integer
+
       index < locked_at
     end
 
-    DESTRUCTIVE = ['replace', 'insert', 'collect!', 'map!', 'pop', 'delete_if',
-                   'reverse!', 'shift', 'shuffle!', 'slice!', 'sort!', 'uniq!',
-                   'unshift', 'zip', 'flatten!', 'fill', 'drop', 'drop_while',
-                   'delete_if', 'clear']
-    DELEGATES = Array.instance_methods - self.instance_methods - DESTRUCTIVE
-
-    DELEGATES.each do |method|
-      class_eval %{
-        def #{method}(*args, &block)
-          @list.send(:#{method}, *args, &block)
-        end
-      }
-    end
-                   
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       classname = @allowed_types[0].name.split('::').last
-      el_name = serialize_as.to_s || (classname[0,1].downcase + classname[1..-1])
-      str << ('<' << el_name << ' count="' << size.to_s << '">')
+      el_name = serialize_as.to_s || (classname[0, 1].downcase + classname[1..])
+      str << '<' << el_name << ' count="' << size.to_s << '">'
       each { |item| item.to_xml_string(str) }
-      str << ('</' << el_name << '>')
+      str << '</' << el_name << '>'
     end
-
   end
-
-
 end

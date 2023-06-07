@@ -1,10 +1,12 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 module Axlsx
   # This class details a border used in Office Open XML spreadsheet styles.
   class Border
-
     include Axlsx::SerializedAttributes
     include Axlsx::OptionsParser
+
+    EDGES = [:left, :right, :top, :bottom].freeze
 
     # Creates a new Border object
     # @option options [Boolean] diagonal_up
@@ -19,7 +21,7 @@ module Axlsx
     #
     # @note The recommended way to manage borders is with Style#add_style
     # @see Style#add_style
-    def initialize(options={})
+    def initialize(options = {})
       @prs = SimpleTypedList.new BorderPr
       parse_options options
     end
@@ -54,7 +56,7 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<border '
       serialized_attributes str
       str << '>'
@@ -66,6 +68,5 @@ module Axlsx
       end
       str << '</border>'
     end
-
   end
 end

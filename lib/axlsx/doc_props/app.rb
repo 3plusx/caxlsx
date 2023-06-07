@@ -1,6 +1,6 @@
-# encoding: UTF-8
-module Axlsx
+# frozen_string_literal: true
 
+module Axlsx
   # App represents the app.xml document. The attributes for this object are primarily managed by the application the end user uses to edit the document. None of the attributes are required to serialize a valid xlsx object.
   # @see shared-documentPropertiesExtended.xsd
   # @note Support is not implemented for the following complex types:
@@ -10,7 +10,6 @@ module Axlsx
   #    HLinks (VectorVariant),
   #    DigSig (DigSigBlob)
   class App
-
     include Axlsx::OptionsParser
 
     # Creates an App object
@@ -36,7 +35,7 @@ module Axlsx
     # @option options [String] application
     # @option options [String] app_version
     # @option options [Integer] doc_security
-    def initialize(options={})
+    def initialize(options = {})
       parse_options options
     end
 
@@ -220,16 +219,14 @@ module Axlsx
 
     # Serialize the app.xml document
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<?xml version="1.0" encoding="UTF-8"?>'
-      str << ('<Properties xmlns="' << APP_NS << '" xmlns:vt="' << APP_NS_VT << '">')
-      instance_values.each do |key, value|
+      str << '<Properties xmlns="' << APP_NS << '" xmlns:vt="' << APP_NS_VT << '">'
+      Axlsx.instance_values_for(self).each do |key, value|
         node_name = Axlsx.camel(key)
         str << "<#{node_name}>#{value}</#{node_name}>"
       end
       str << '</Properties>'
     end
-
   end
-
 end

@@ -1,9 +1,10 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 module Axlsx
   # The Xf class defines a formatting record for use in Styles. The recommended way to manage styles for your workbook is with Styles#add_style
   # @see Styles#add_style
   class Xf
-    #does not support extList (ExtensionList)
+    # does not support extList (ExtensionList)
 
     include Axlsx::SerializedAttributes
     include Axlsx::OptionsParser
@@ -23,7 +24,7 @@ module Axlsx
     # @option options [Boolean] applyProtection
     # @option options [CellAlignment] alignment
     # @option options [CellProtection] protection
-    def initialize(options={})
+    def initialize(options = {})
       parse_options options
     end
 
@@ -93,7 +94,7 @@ module Axlsx
     # @return [Boolean]
     attr_reader :applyProtection
 
-      # @see Xf#alignment
+    # @see Xf#alignment
     def alignment=(v) DataTypeValidator.validate "Xf.alignment", CellAlignment, v; @alignment = v end
 
     # @see protection
@@ -133,7 +134,7 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<xf '
       serialized_attributes str
       str << '>'
@@ -141,7 +142,5 @@ module Axlsx
       protection.to_xml_string(str) if self.protection
       str << '</xf>'
     end
-
-
   end
 end

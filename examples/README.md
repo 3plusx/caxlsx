@@ -57,6 +57,7 @@ Customizations:
 * [Column widths](column_widths_example.md)
 * [Outlines](column_outlines_example.md)
 * [No autowidth](no_autowidth_example.md)
+* [Fine tuned autowidth](fine_tuned_autowidth_example.md)
 
 ### Filters
 
@@ -80,6 +81,7 @@ Customizations:
 ### Print
 
 * [Fit to page print settings](fit_to_page_example.md)
+* [Set print area](set_print_area_example.md)
 * [Headers and footers](header_footer_example.md)
 * [Page breaks](page_break_example.md)
 * [Print settings](print_settings_example.md)
@@ -89,6 +91,7 @@ Customizations:
 
 * [Custom Row Styles](row_styles_example.md)
 * [Outlines](row_outlines_example.md)
+* [Outline options](row_outlines_options_example.md)
 * [Row heights](row_heights_example.md)
 
 ### Sheet
@@ -103,7 +106,7 @@ Customizations:
 
 * [Fonts](font_example.md)
 * [Format codes](format_codes_example.md)
-* [Number formats and currencyc](number_format_example.md)
+* [Number formats and currency](number_format_example.md)
 * [Rich text](rich_text_example.md)
 * [Wrap text](wrap_text_example.md)
 

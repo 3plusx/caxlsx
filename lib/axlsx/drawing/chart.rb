@@ -1,11 +1,10 @@
-# encoding: UTF-8
-module Axlsx
+# frozen_string_literal: true
 
+module Axlsx
   # A Chart is the superclass for specific charts
   # @note Worksheet#add_chart is the recommended way to create charts for your worksheets.
   # @see README for examples
   class Chart
-
     include Axlsx::OptionsParser
     # Creates a new chart object
     # @param [GraphicalFrame] frame The frame that holds this chart.
@@ -14,10 +13,12 @@ module Axlsx
     # @option options [Symbol] legend_position
     # @option options [Array|String|Cell] start_at The X, Y coordinates defining the top left corner of the chart.
     # @option options [Array|String|Cell] end_at The X, Y coordinates defining the bottom right corner of the chart.
-    def initialize(frame, options={})
+    # @option options [Boolean] plot_visible_only (true) Whether only data from visible cells should be plotted.
+    # @option options [Boolean] rounded_corners (true) Whether the chart area shall have rounded corners.
+    def initialize(frame, options = {})
       @style = 18
       @view_3D = nil
-      @graphic_frame=frame
+      @graphic_frame = frame
       @graphic_frame.anchor.drawing.worksheet.workbook.charts << self
       @series = SimpleTypedList.new Series
       @show_legend = true
@@ -26,6 +27,8 @@ module Axlsx
       @series_type = Series
       @title = Title.new
       @bg_color = nil
+      @plot_visible_only = true
+      @rounded_corners = true
       parse_options options
       start_at(*options[:start_at]) if options[:start_at]
       end_at(*options[:end_at]) if options[:end_at]
@@ -48,7 +51,7 @@ module Axlsx
     # @return [Series]
     attr_reader :series_type
 
-    #TODO data labels!
+    # TODO: data labels!
     def d_lbls
       @d_lbls ||= DLbls.new(self.class)
     end
@@ -98,6 +101,14 @@ module Axlsx
     # @return [String]
     attr_reader :bg_color
 
+    # Whether only data from visible cells should be plotted.
+    # @return [Boolean]
+    attr_reader :plot_visible_only
+
+    # Whether the chart area shall have rounded corners.
+    # @return [Boolean]
+    attr_reader :rounded_corners
+
     # The relationship object for this chart.
     # @return [Relationship]
     def relationship
@@ -113,7 +124,7 @@ module Axlsx
     # The part name for this chart
     # @return [String]
     def pn
-      "#{CHART_PN % (index+1)}"
+      format(CHART_PN, index + 1)
     end
 
     # The title object for the chart.
@@ -169,28 +180,39 @@ module Axlsx
     # Adds a new series to the chart's series collection.
     # @return [Series]
     # @see Series
-    def add_series(options={})
+    def add_series(options = {})
       @series_type.new(self, options)
       @series.last
     end
 
     # Assigns a background color to chart area
     def bg_color=(v)
-      DataTypeValidator.validate(:color, Color, Color.new(:rgb => v))
+      DataTypeValidator.validate(:color, Color, Color.new(rgb: v))
       @bg_color = v
     end
+
+    # Whether only data from visible cells should be plotted.
+    # @param [Boolean] v
+    # @return [Boolean]
+    def plot_visible_only=(v) Axlsx::validate_boolean(v); @plot_visible_only = v; end
+
+    # Whether the chart area shall have rounded corners.
+    # @param [Boolean] v
+    # @return [Boolean]
+    def rounded_corners=(v) Axlsx::validate_boolean(v); @rounded_corners = v; end
 
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<?xml version="1.0" encoding="UTF-8"?>'
-      str << ('<c:chartSpace xmlns:c="' << XML_NS_C << '" xmlns:a="' << XML_NS_A << '" xmlns:r="' << XML_NS_R << '">')
-      str << ('<c:date1904 val="' << Axlsx::Workbook.date1904.to_s << '"/>')
-      str << ('<c:style val="' << style.to_s << '"/>')
+      str << '<c:chartSpace xmlns:c="' << XML_NS_C << '" xmlns:a="' << XML_NS_A << '" xmlns:r="' << XML_NS_R << '">'
+      str << '<c:date1904 val="' << Axlsx::Workbook.date1904.to_s << '"/>'
+      str << '<c:roundedCorners val="' << rounded_corners.to_s << '"/>'
+      str << '<c:style val="' << style.to_s << '"/>'
       str << '<c:chart>'
-      @title.to_xml_string str
-      str << ('<c:autoTitleDeleted val="' << (@title == nil).to_s << '"/>')
+      @title.to_xml_string(str) unless @title.empty?
+      str << '<c:autoTitleDeleted val="' << @title.nil?.to_s << '"/>'
       @view_3D.to_xml_string(str) if @view_3D
       str << '<c:floor><c:thickness val="0"/></c:floor>'
       str << '<c:sideWall><c:thickness val="0"/></c:sideWall>'
@@ -201,13 +223,13 @@ module Axlsx
       str << '</c:plotArea>'
       if @show_legend
         str << '<c:legend>'
-        str << ('<c:legendPos val="' << @legend_position.to_s << '"/>')
+        str << '<c:legendPos val="' << @legend_position.to_s << '"/>'
         str << '<c:layout/>'
         str << '<c:overlay val="0"/>'
         str << '</c:legend>'
       end
-      str << '<c:plotVisOnly val="1"/>'
-      str << ('<c:dispBlanksAs val="' << display_blanks_as.to_s << '"/>')
+      str << '<c:plotVisOnly val="' << @plot_visible_only.to_s << '"/>'
+      str << '<c:dispBlanksAs val="' << display_blanks_as.to_s << '"/>'
       str << '<c:showDLblsOverMax val="1"/>'
       str << '</c:chart>'
       if bg_color
@@ -252,7 +274,7 @@ module Axlsx
     # reference or cell to use in setting the start marker position.
     # @param [Integer] y The row
     # @return [Marker]
-    def start_at(x=0, y=0)
+    def start_at(x = 0, y = 0)
       @graphic_frame.anchor.start_at(x, y)
     end
 
@@ -263,14 +285,12 @@ module Axlsx
     # @param [Integer] y The row - default 10
     # @return [Marker]
     # @see start_at
-    def end_at(x=10, y=10)
+    def end_at(x = 10, y = 10)
       @graphic_frame.anchor.end_at(x, y)
     end
 
     # sets the view_3D object for the chart
     def view_3D=(v) DataTypeValidator.validate "#{self.class}.view_3D", View3D, v; @view_3D = v; end
     alias :view3D= :view_3D=
-
   end
-
 end

@@ -1,4 +1,5 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 module Axlsx
   # A border part.
   class BorderPr
@@ -44,11 +45,11 @@ module Axlsx
     # @option options [Symbol] name
     # @option options [Symbol] style
     # @see Axlsx::Border
-    def initialize(options={})
+    def initialize(options = {})
       parse_options(options)
-      #options.each do |o|
+      # options.each do |o|
       #  self.send("#{o[0]}=", o[1]) if self.respond_to? "#{o[0]}="
-      #end
+      # end
     end
 
     # @see name
@@ -61,11 +62,10 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
-      str << ('<' << @name.to_s << ' style="' << @style.to_s << '">')
+    def to_xml_string(str = +'')
+      str << '<' << @name.to_s << ' style="' << @style.to_s << '">'
       @color.to_xml_string(str) if @color.is_a?(Color)
-      str << ('</' << @name.to_s << '>')
+      str << '</' << @name.to_s << '>'
     end
-
   end
 end

@@ -1,4 +1,5 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 module Axlsx
   # Data validation allows the validation of cell data
   #
@@ -13,16 +14,17 @@ module Axlsx
     # @option options [Boolean] allowBlank - A boolean value indicating whether the data validation allows the use of empty or blank entries.
     # @option options [String] error - Message text of error alert.
     # @option options [Symbol] errorStyle - The style of error alert used for this data validation.
-    # @option options [String] errorTitle - itle bar text of error alert.
+    # @option options [String] errorTitle - Title bar text of error alert.
     # @option options [Symbol] operator - The relational operator used with this data validation.
     # @option options [String] prompt - Message text of input prompt.
     # @option options [String] promptTitle - Title bar text of input prompt.
-    # @option options [Boolean] showDropDown - A boolean value indicating whether to display a dropdown combo box for a list type data validation
+    # @option options [Boolean] showDropDown - A boolean value indicating whether to display a dropdown combo box for a list type data validation. Be careful: It has an inverted logic, false shows the dropdown list! You should use hideDropDown instead.
+    # @option options [Boolean] hideDropDown - A boolean value indicating whether to hide the dropdown combo box for a list type data validation. Defaults to `false` (meaning the dropdown is visible by default).
     # @option options [Boolean] showErrorMessage - A boolean value indicating whether to display the error alert message when an invalid value has been entered, according to the criteria specified.
     # @option options [Boolean] showInputMessage - A boolean value indicating whether to display the input prompt message.
     # @option options [String] sqref - Range over which data validation is applied, in "A1:B2" format.
     # @option options [Symbol] type - The type of data validation.
-    def initialize(options={})
+    def initialize(options = {})
       # defaults
       @formula1 = @formula2 = @error = @errorTitle = @operator = @prompt = @promptTitle = @sqref = nil
       @allowBlank = @showErrorMessage = true
@@ -121,12 +123,21 @@ module Axlsx
 
     # Show drop down
     # A boolean value indicating whether to display a dropdown combo box for a list type data
-    # validation. Be careful: false shows the dropdown list!
+    # validation. Be careful: It has an inverted logic, false shows the dropdown list!
     # Available for type list
     # @see type
     # @return [Boolean]
     # default false
     attr_reader :showDropDown
+
+    # Hide drop down
+    # A boolean value indicating whether to hide a dropdown combo box for a list type data
+    # validation. Defaults to `false` (meaning the dropdown is visible by default).
+    # Available for type list
+    # @see type
+    # @return [Boolean]
+    # default false
+    alias :hideDropDown :showDropDown
 
     # Show error message
     # A boolean value indicating whether to display the error alert message when an invalid
@@ -166,7 +177,6 @@ module Axlsx
     # default none
     attr_reader :type
 
-
     # @see formula1
     def formula1=(v); Axlsx::validate_string(v); @formula1 = v end
 
@@ -195,7 +205,18 @@ module Axlsx
     def promptTitle=(v); Axlsx::validate_string(v); @promptTitle = v end
 
     # @see showDropDown
-    def showDropDown=(v); Axlsx::validate_boolean(v); @showDropDown = v end
+    def showDropDown=(v)
+      warn 'The `showDropDown` has an inverted logic, false shows the dropdown list! You should use `hideDropDown` instead.'
+      Axlsx::validate_boolean(v)
+      @showDropDown = v
+    end
+
+    # @see hideDropDown
+    def hideDropDown=(v)
+      Axlsx::validate_boolean(v)
+      # It's just an alias for the showDropDown attribute, hideDropDown should set the value of the original showDropDown.
+      @showDropDown = v
+    end
 
     # @see showErrorMessage
     def showErrorMessage=(v); Axlsx::validate_boolean(v); @showErrorMessage = v end
@@ -212,22 +233,25 @@ module Axlsx
     # Serializes the data validation
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       valid_attributes = get_valid_attributes
+      h = Axlsx.instance_values_for(self).select { |key, _| valid_attributes.include?(key.to_sym) && !CHILD_ELEMENTS.include?(key.to_sym) }
 
       str << '<dataValidation '
-      str << instance_values.map do |key, value|
-        '' << key << '="' << Axlsx.booleanize(value).to_s << '"' if (valid_attributes.include?(key.to_sym) && !CHILD_ELEMENTS.include?(key.to_sym))
-      end.join(' ')
+      h.each_with_index do |key_value, index|
+        str << ' ' unless index.zero?
+        str << key_value.first << '="' << Axlsx.booleanize(key_value.last).to_s << '"'
+      end
       str << '>'
-      str << ('<formula1>' << self.formula1 << '</formula1>') if @formula1 and valid_attributes.include?(:formula1)
-      str << ('<formula2>' << self.formula2 << '</formula2>') if @formula2 and valid_attributes.include?(:formula2)
+      str << '<formula1>' << formula1 << '</formula1>' if formula1 && valid_attributes.include?(:formula1)
+      str << '<formula2>' << formula2 << '</formula2>' if formula2 && valid_attributes.include?(:formula2)
       str << '</dataValidation>'
     end
 
-  private
+    private
+
     def get_valid_attributes
-      attributes = [:allowBlank, :error, :errorStyle, :errorTitle, :prompt, :promptTitle, :showErrorMessage, :showInputMessage, :sqref, :type ]
+      attributes = [:allowBlank, :error, :errorStyle, :errorTitle, :prompt, :promptTitle, :showErrorMessage, :showInputMessage, :sqref, :type]
 
       if [:whole, :decimal, :data, :time, :date, :textLength].include?(@type)
         attributes << [:operator, :formula1]

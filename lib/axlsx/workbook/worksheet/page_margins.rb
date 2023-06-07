@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # PageMargins specify the margins when printing a worksheet.
   #
@@ -9,7 +11,6 @@ module Axlsx
   # @see Worksheet#page_margins
   # @see Worksheet#initialize
   class PageMargins
-
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
 
@@ -20,7 +21,7 @@ module Axlsx
     # @option options [Numeric] top The top margin in inches
     # @option options [Numeric] header The header margin in inches
     # @option options [Numeric] footer The footer margin in inches
-    def initialize(options={})
+    def initialize(options = {})
       # Default values taken from MS Excel for Mac 2011
       @left = @right = DEFAULT_LEFT_RIGHT
       @top = @bottom = DEFAULT_TOP_BOTTOM
@@ -28,7 +29,10 @@ module Axlsx
       parse_options options
     end
 
-    serializable_attributes :left, :right, :bottom, :top, :header, :footer
+    # Possible margins to set
+    MARGIN_KEYS = [:left, :right, :top, :bottom, :header, :footer].freeze
+
+    serializable_attributes(*MARGIN_KEYS)
 
     # Default left and right margin (in inches)
     DEFAULT_LEFT_RIGHT = 0.75
@@ -64,10 +68,11 @@ module Axlsx
     attr_reader :footer
 
     # Set some or all margins at once.
-    # @param [Hash] margins the margins to set (possible keys are :left, :right, :top, :bottom, :header and :footer).
+    # @param [Hash] margins the margins to set. See {MARGIN_KEYS} for a list of possible keys.
     def set(margins)
       margins.select do |k, v|
-        next unless [:left, :right, :top, :bottom, :header, :footer].include? k
+        next unless MARGIN_KEYS.include? k
+
         send("#{k}=", v)
       end
     end
@@ -90,7 +95,7 @@ module Axlsx
     # @return [String]
     # @note For compatibility, this is a noop unless custom margins have been specified.
     # @see #custom_margins_specified?
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('pageMargins', str)
     end
   end

@@ -1,0 +1,54 @@
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-performance
+  - rubocop-minitest
+
+AllCops:
+  DisabledByDefault: true
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 2.6
+  DisplayStyleGuide: true
+  ExtraDetails: true
+  Exclude:
+    - 'docs/**/*'
+    - 'examples/**/*'
+    - 'vendor/bundle/**/*'
+
+Gemspec:
+  Enabled: true
+
+Layout:
+  Enabled: true
+
+Layout/CommentIndentation:
+  AllowForAlignment: true
+
+Layout/ExtraSpacing:
+  AllowBeforeTrailingComments: true
+
+Lint:
+  Enabled: true
+
+Minitest:
+  Enabled: true
+
+Naming:
+  Enabled: true
+
+Performance:
+  Enabled: true
+
+Security:
+  Enabled: true
+
+Style:
+  Enabled: true
+
+Style/Semicolon:
+  AllowAsExpressionSeparator: true
+
+Style/NumericLiterals:
+  Exclude:
+    - 'lib/**/*'

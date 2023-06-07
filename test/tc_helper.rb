@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH.unshift "#{File.dirname(__FILE__)}/../lib"
 require 'simplecov'
 SimpleCov.start do
@@ -7,4 +9,5 @@ end
 
 require 'test/unit'
 require "timecop"
-require "axlsx.rb"
+require 'webmock/test_unit'
+require "axlsx"

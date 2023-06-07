@@ -1,5 +1,6 @@
-module Axlsx
+# frozen_string_literal: true
 
+module Axlsx
   # The SheetPr class manages serialization of a worksheet's sheetPr element.
   class SheetPr
     include Axlsx::OptionsParser
@@ -30,8 +31,9 @@ module Axlsx
 
     # Creates a new SheetPr object
     # @param [Worksheet] worksheet The worksheet that owns this SheetPr object
-    def initialize(worksheet, options={})
+    def initialize(worksheet, options = {})
       raise ArgumentError, "you must provide a worksheet" unless worksheet.is_a?(Worksheet)
+
       @worksheet = worksheet
       @outline_pr = nil
       parse_options options
@@ -48,9 +50,11 @@ module Axlsx
     # Serialize the object
     # @param [String] str serialized output will be appended to this object if provided.
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       update_properties
-      str << "<sheetPr #{serialized_attributes}>"
+      str << '<sheetPr '
+      serialized_attributes(str)
+      str << '>'
       tab_color.to_xml_string(str, 'tabColor') if tab_color
       outline_pr.to_xml_string(str) if @outline_pr
       page_setup_pr.to_xml_string(str)
@@ -62,7 +66,7 @@ module Axlsx
     def page_setup_pr
       @page_setup_pr ||= PageSetUpPr.new
     end
-    
+
     # The OutlinePr for this sheet pr object
     # @return [OutlinePr]
     def outline_pr
@@ -71,14 +75,14 @@ module Axlsx
 
     # @see tab_color
     def tab_color=(v)
-      @tab_color ||= Color.new(:rgb => v)
+      @tab_color = Color.new(rgb: v)
     end
 
     private
 
     def update_properties
       page_setup_pr.fit_to_page = worksheet.fit_to_page?
-      if worksheet.auto_filter.columns.size > 0
+      unless worksheet.auto_filter.columns.empty?
         self.filter_mode = 1
         self.enable_format_conditions_calculation = 1
       end

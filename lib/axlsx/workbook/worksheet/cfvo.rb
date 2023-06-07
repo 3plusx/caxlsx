@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Conditional Format Value Object
   # Describes the values of the interpolation points in a gradient scale. This object is used by ColorScale, DataBar and IconSet classes
@@ -7,7 +9,6 @@ module Axlsx
   # @see ConditionalFormattingRule#initialize
   #
   class Cfvo
-
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
 
@@ -15,7 +16,7 @@ module Axlsx
     # @option options [Symbol] type The type of conditional formatting value object
     # @option options [Boolean]  gte threshold value usage indicator
     # @option options [String] val The value of the conditional formatting object
-    def initialize(options={})
+    def initialize(options = {})
       @gte = true
       parse_options options
     end
@@ -47,13 +48,14 @@ module Axlsx
     # @see val
     def val=(v)
       raise ArgumentError, "#{v.inspect} must respond to to_s" unless v.respond_to?(:to_s)
+
       @val = v.to_s
     end
 
     # serialize the Csvo object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('cfvo', str)
     end
   end

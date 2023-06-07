@@ -1,16 +1,71 @@
 CHANGELOG
 ---------
+- **Unreleased**: 4.0.0
+  - Drop support for Ruby versions < 2.6
+  - Added frozen string literals
+  - Fix `SimpleTypedList#to_a` and `SimpleTypedList#to_ary` returning the internal list instance
+  - Remove ability to set `u=` to true in favor of using :single or one of the other underline options
+  - Fix `Workbook#sheet_by_name` not returning sheets with encoded characters in the name
+  - Raise exception if `axlsx_styler` gem is present as its code was merged directly into `caxlsx` in v3.3.0
 
-- **Unreleased**
+- **April.23.23**: 3.4.1
+  - [PR #209](https://github.com/caxlsx/caxlsx/pull/209) - Revert characters other than `=` being considered as formulas.
+
+- **April.12.23**: 3.4.0
+  - [PR #186](https://github.com/caxlsx/caxlsx/pull/186) - Add `escape_formulas` to global, workbook, worksheet, row and cell levels, and standardize behavior.
+  - [PR #186](https://github.com/caxlsx/caxlsx/pull/186) - `escape_formulas` should handle all [OWASP-designated formula prefixes](https://owasp.org/www-community/attacks/CSV_Injection).
+  - Fix bug when calling `worksheet.add_border("A1:B2", nil)`
+  - Change `BorderCreator#initialize` arguments handling
+  - Fix `add_border` to work with singluar cell refs
+  - [PR #196](https://github.com/caxlsx/caxlsx/pull/196) - Fix tab color reassignment
+  - Add support for remote image source in `Pic` using External Relationship (supported in Excel documents)
+
+- **October.21.22**: 3.3.0
+  - [PR #168](https://github.com/caxlsx/caxlsx/pull/168) - Merge in the gem [`axlsx_styler`](https://github.com/axlsx-styler-gem/axlsx_styler)
+    - Add ability to both apply or append to existing styles after rows have been created using `worksheet.add_style`
+      - `worksheet.add_style "A1", {b: true}`
+      - `worksheet.add_style "A1:B2", {b: true}`
+      - `worksheet.add_style ["A1", "B2:C7", "D8:E9"], {b: true}`
+    - Add ability to create borders upon specific areas of the page using `worksheet.add_border`
+      - `worksheet.add_border "A1", {style: :thin}`
+      - `worksheet.add_border "A1:B2", {style: :thin}`
+      - `worksheet.add_border ["A1", "B2:C7", "D8:E9"], {style: :thin}`
+    - Add `Axlsx::BorderCreator` the class used under the hood for `worksheet.add_border`
+    - Allow specifying `:all` in `border: {edges: :all}` which is a shortcut for `border: {edges: [:left, :right, :top, :bottom]}`
+  - [PR #156](https://github.com/caxlsx/caxlsx/pull/156) - Prevent Excel from crashing when multiple data columns added to PivotTable
+  - [PR #155](https://github.com/caxlsx/caxlsx/pull/155) - Add `hideDropDown` alias for `showDropDown` setting, as the latter is confusing to use (because its logic seems inverted).
+  - [PR #143](https://github.com/caxlsx/caxlsx/pull/143) - Add setting `sort_on_headers` for pivot tables
+  - [PR #132](https://github.com/caxlsx/caxlsx/pull/132) - Remove monkey patch from Object#instance_values
+  - [PR #139](https://github.com/caxlsx/caxlsx/pull/139) - Sort archive entries for correct MIME detection with `file` command
+  - [PR #140](https://github.com/caxlsx/caxlsx/pull/140) - Update gemspec to recent styles - it reduced the size of the gem
+  - [PR #147](https://github.com/caxlsx/caxlsx/pull/147) - Implement “rounded corners” setting for charts.
+  - [PR #145](https://github.com/caxlsx/caxlsx/pull/145) - Implement “plot visible only” setting for charts.
+  - [PR #144](https://github.com/caxlsx/caxlsx/pull/144) - Completely hide chart titles if blank; Fix missing cell reference for chart title when cell empty.
+
+- **February.23.22**: 3.2.0
+  - [PR #75](https://github.com/caxlsx/caxlsx/pull/85) - Added manageable markers for scatter series
+  - [PR #116](https://github.com/caxlsx/caxlsx/pull/116) - Validate name option to be non-empty string when passed.
+  - [PR #117](https://github.com/caxlsx/caxlsx/pull/117) - Allow passing an Array of border hashes to the `border` style. Change previous behaviour where `border_top`, `border_*` styles would not be applied unless `border` style was also defined.
+  - [PR #122](https://github.com/caxlsx/caxlsx/pull/122) - Improve error messages when incorrect ranges are provided to `Worksheet#[]`
+  - [PR #123](https://github.com/caxlsx/caxlsx/pull/123) - Fix invalid xml when pivot table created with more than one column in data field. Solves [Issue #110](https://github.com/caxlsx/caxlsx/issues/110)
+  - [PR #127](https://github.com/caxlsx/caxlsx/pull/127) - Possibility to configure the calculation of the autowidth mechanism with `font_scale_divisor` and `bold_font_multiplier`. Example: [Fine tuned autowidth](examples/fine_tuned_autowidth_example.md)
+  - [PR #85](https://github.com/caxlsx/caxlsx/pull/85) - Manageable markers for scatter series
+  - [PR #120](https://github.com/caxlsx/caxlsx/pull/120) - Return output stream in binmode
+
+- **September.22.21**: 3.1.1
   - [PR #107](https://github.com/caxlsx/caxlsx/pull/107) - Add overlap to bar charts
   - [PR #108](https://github.com/caxlsx/caxlsx/pull/108) - Fix gap depth and gap depth validators for bar charts and 3D bar charts
+  - [PR #94](https://github.com/caxlsx/caxlsx/pull/94) - Major performance improvement for charts with large amounts of data
+  - [PR #81](https://github.com/caxlsx/caxlsx/pull/81) - Add option to define a color for the BarSeries
 
 - **March.27.21**: 3.1.0
-  - [PR #95](https://github.com/caxlsx/caxlsx/pull/95) - Replace mimemagic with marcel  
+  - [PR #95](https://github.com/caxlsx/caxlsx/pull/95) - Replace mimemagic with marcel
   - [PR #87](https://github.com/caxlsx/caxlsx/pull/87) - Implement :offset option for worksheet#add_row
   - [PR #79](https://github.com/caxlsx/caxlsx/pull/79) - Add support for format in pivot tables
   - [PR #77](https://github.com/caxlsx/caxlsx/pull/77) - Fix special characters in table header
   - [PR #57](https://github.com/caxlsx/caxlsx/pull/57) - Deprecate using #serialize with boolean argument: Calls like `Package#serialize("name.xlsx", false)` should be replaced with `Package#serialize("name.xlsx", confirm_valid: false)`.
+  - [PR #78](https://github.com/caxlsx/caxlsx/pull/78) - Fix special characters in pivot table cache definition
+  - [PR #84](https://github.com/caxlsx/caxlsx/pull/84) - Add JRuby 9.2 to the CI
 
 - **January.5.21**: 3.0.4
   - [PR #72](https://github.com/caxlsx/caxlsx/pull/72) - Relax Ruby dependency to allow for Ruby 3. This required Travis to be upgraded from Ubuntu Trusty to Ubuntu Bionic. rbx-3 was dropped.
@@ -23,11 +78,16 @@ CHANGELOG
   - [PR #56](https://github.com/caxlsx/caxlsx/pull/56) - Add `zip_command` option to `#serialize` for faster serialization of large Excel files by using a zip binary
   - [PR #54](https://github.com/caxlsx/caxlsx/pull/54) - Fix type detection for floats with out-of-rage exponents
   - [I #67](https://github.com/caxlsx/caxlsx/issues/67) - Fix regression in worksheet name length enforcement: Some unicode characters were counted incorrectly, so that names that previously worked fine now stopped working. (This was introduced in 3.0.2)
+  - [I #58](https://github.com/caxlsx/caxlsx/issues/58) - Fix explosion for pie chart throwing error
+  - [PR #60](https://github.com/caxlsx/caxlsx/pull/60) - Add Ruby 2.7 to the CI
+  - [PR #47](https://github.com/caxlsx/caxlsx/pull/47) - Restructure examples folder
 
 - **July.16.20**: 3.0.2
   - [I #51](https://github.com/caxlsx/caxlsx/issues/51) - Images do not import on Windows. IO read set explicitly to binary mode.
   - [PR #53](https://github.com/caxlsx/caxlsx/pull/53) - Limit column width to 255. Maximum column width limit in MS Excel is 255 characters, see https://support.microsoft.com/en-us/office/excel-specifications-and-limits-1672b34d-7043-467e-8e27-269d656771c3
   - [PR #44](https://github.com/caxlsx/caxlsx/pull/44) - Improve cell autowidth calculations. Previously columns with undefined/auto width would tend to be just slightly too small for the content. This is because certain letters were being excluded from the width calculation because they were deemed not wide enough. We now treat all characters as equal width which helps ensure columns auto-widths are actually large enough for the content. This will gain us a very slight performance improvement because of we are no longer searching the string for specific characters.
+  - [PR #40](https://github.com/caxlsx/caxlsx/pull/40) - Escape special characters in charts
+  - [PR #34](https://github.com/caxlsx/caxlsx/pull/34) - Add option to protect against csv injection attacks
 
 - **October.4.19**: 3.0.1
   - Support for ruby versions limited to officially supported version (Ruby v2.3+)

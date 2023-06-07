@@ -1,42 +1,43 @@
+# frozen_string_literal: true
+
 require 'tc_helper'
 
 class TestHeaderFooter < Test::Unit::TestCase
-
   def setup
     @p = Axlsx::Package.new
-    ws = @p.workbook.add_worksheet :name => 'test'
+    ws = @p.workbook.add_worksheet name: 'test'
     @hf = ws.header_footer
   end
 
   def test_initialize
-    assert_equal(nil, @hf.odd_header)
-    assert_equal(nil, @hf.odd_footer)
+    assert_nil(@hf.odd_header)
+    assert_nil(@hf.odd_footer)
 
-    assert_equal(nil, @hf.even_header)
-    assert_equal(nil, @hf.even_footer)
+    assert_nil(@hf.even_header)
+    assert_nil(@hf.even_footer)
 
-    assert_equal(nil, @hf.first_header)
-    assert_equal(nil, @hf.first_footer)
+    assert_nil(@hf.first_header)
+    assert_nil(@hf.first_footer)
 
-    assert_equal(nil, @hf.different_first)
-    assert_equal(nil, @hf.different_odd_even)
+    assert_nil(@hf.different_first)
+    assert_nil(@hf.different_odd_even)
   end
 
   def test_initialize_with_options
     header_footer = {
-      :odd_header => 'oh',
-      :odd_footer => 'of',
+      odd_header: 'oh',
+      odd_footer: 'of',
 
-      :even_header => 'eh',
-      :even_footer => 'ef',
+      even_header: 'eh',
+      even_footer: 'ef',
 
-      :first_header => 'fh',
-      :first_footer => 'ff',
+      first_header: 'fh',
+      first_footer: 'ff',
 
-      :different_first => true,
-      :different_odd_even => true
+      different_first: true,
+      different_odd_even: true
     }
-    optioned = @p.workbook.add_worksheet(:name => 'optioned', :header_footer => header_footer).header_footer
+    optioned = @p.workbook.add_worksheet(name: 'optioned', header_footer: header_footer).header_footer
 
     assert_equal('oh', optioned.odd_header)
     assert_equal('of', optioned.odd_footer)
@@ -47,8 +48,8 @@ class TestHeaderFooter < Test::Unit::TestCase
     assert_equal('fh', optioned.first_header)
     assert_equal('ff', optioned.first_footer)
 
-    assert_equal(true, optioned.different_first)
-    assert_equal(true, optioned.different_odd_even)
+    assert(optioned.different_first)
+    assert(optioned.different_odd_even)
   end
 
   def test_string_attributes
@@ -59,7 +60,7 @@ class TestHeaderFooter < Test::Unit::TestCase
   end
 
   def test_boolean_attributes
-   %w(different_first different_odd_even).each do |attr|
+    %w(different_first different_odd_even).each do |attr|
       assert_raise(ArgumentError, 'only booleanish allowed in string attributes') { @hf.send("#{attr}=", 'foo') }
       assert_nothing_raised { @hf.send("#{attr}=", 1) }
     end
@@ -67,17 +68,17 @@ class TestHeaderFooter < Test::Unit::TestCase
 
   def test_set_all_values
     @hf.set(
-      :odd_header => 'oh',
-      :odd_footer => 'of',
+      odd_header: 'oh',
+      odd_footer: 'of',
 
-      :even_header => 'eh',
-      :even_footer => 'ef',
+      even_header: 'eh',
+      even_footer: 'ef',
 
-      :first_header => 'fh',
-      :first_footer => 'ff',
+      first_header: 'fh',
+      first_footer: 'ff',
 
-      :different_first => true,
-      :different_odd_even => true
+      different_first: true,
+      different_odd_even: true
     )
 
     assert_equal('oh', @hf.odd_header)
@@ -89,26 +90,27 @@ class TestHeaderFooter < Test::Unit::TestCase
     assert_equal('fh', @hf.first_header)
     assert_equal('ff', @hf.first_footer)
 
-    assert_equal(true, @hf.different_first)
-    assert_equal(true, @hf.different_odd_even)
+    assert(@hf.different_first)
+    assert(@hf.different_odd_even)
   end
 
   def test_to_xml_all_values
     @hf.set(
-      :odd_header => 'oh',
-      :odd_footer => 'of',
+      odd_header: 'oh',
+      odd_footer: 'of',
 
-      :even_header => 'eh',
-      :even_footer => 'ef',
+      even_header: 'eh',
+      even_footer: 'ef',
 
-      :first_header => 'fh',
-      :first_footer => 'ff',
+      first_header: 'fh',
+      first_footer: 'ff',
 
-      :different_first => true,
-      :different_odd_even => true
+      different_first: true,
+      different_odd_even: true
     )
 
     doc = Nokogiri::XML.parse(@hf.to_xml_string)
+
     assert_equal(1, doc.xpath(".//headerFooter[@differentFirst=1][@differentOddEven=1]").size)
 
     assert_equal(1, doc.xpath(".//headerFooter/oddHeader").size)
@@ -129,11 +131,12 @@ class TestHeaderFooter < Test::Unit::TestCase
 
   def test_to_xml_some_values
     @hf.set(
-      :odd_header => 'oh',
-      :different_odd_even => false
+      odd_header: 'oh',
+      different_odd_even: false
     )
 
     doc = Nokogiri::XML.parse(@hf.to_xml_string)
+
     assert_equal(1, doc.xpath(".//headerFooter[@differentOddEven=0]").size)
     assert_equal(0, doc.xpath(".//headerFooter[@differentFirst]").size)
 
@@ -148,4 +151,3 @@ class TestHeaderFooter < Test::Unit::TestCase
     assert_equal(0, doc.xpath(".//headerFooter/firstFooter").size)
   end
 end
-

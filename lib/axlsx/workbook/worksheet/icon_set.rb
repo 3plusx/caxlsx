@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Axlsx
   # Conditional Format Rule icon sets
   # Describes an icon set conditional formatting rule.
@@ -6,7 +8,6 @@ module Axlsx
   # @see Worksheet#add_conditional_formatting
   # @see ConditionalFormattingRule#initialize
   class IconSet
-
     include Axlsx::OptionsParser
     include Axlsx::SerializedAttributes
 
@@ -47,7 +48,7 @@ module Axlsx
     # @return [Boolean]
     attr_reader :showValue
 
-      # @see iconSet
+    # @see iconSet
     def iconSet=(v); Axlsx::validate_icon_set(v); @iconSet = v end
 
     # @see showValue
@@ -62,7 +63,7 @@ module Axlsx
     # Serialize this object to an xml string
     # @param [String] str
     # @return [String]
-    def to_xml_string(str="")
+    def to_xml_string(str = +'')
       serialized_tag('iconSet', str) do
         @value_objects.each { |cfvo| cfvo.to_xml_string(str) }
       end
@@ -74,7 +75,7 @@ module Axlsx
     # I am keeping this private for now as I am not sure what impact changes to the required two cfvo objects will do.
     def initialize_value_objects
       @value_objects = SimpleTypedList.new Cfvo
-      @value_objects.concat [Cfvo.new(:type => :percent, :val => 0), Cfvo.new(:type => :percent, :val => 33), Cfvo.new(:type => :percent, :val => 67)]
+      @value_objects.concat [Cfvo.new(type: :percent, val: 0), Cfvo.new(type: :percent, val: 33), Cfvo.new(type: :percent, val: 67)]
       @value_objects.lock
     end
   end

@@ -1,16 +1,13 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 module Axlsx
-  
- 
   # CellAlignment stores information about the cell alignment of a style Xf Object.
   # @note Using Styles#add_style is the recommended way to manage cell alignment.
   # @see Styles#add_style
   class CellAlignment
-    
-
     include Axlsx::SerializedAttributes
     include Axlsx::OptionsParser
-    
+
     serializable_attributes :horizontal, :vertical, :text_rotation, :wrap_text, :indent, :relative_indent, :justify_last_line, :shrink_to_fit, :reading_order
     # Create a new cell_alignment object
     # @option options [Symbol] horizontal
@@ -22,11 +19,9 @@ module Axlsx
     # @option options [Boolean] justify_last_line
     # @option options [Boolean] shrink_to_fit
     # @option options [Integer] reading_order
-    def initialize(options={})
+    def initialize(options = {})
       parse_options options
     end
-
-
 
     # The horizontal alignment of the cell.
     # @note
@@ -124,9 +119,8 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       serialized_tag('alignment', str)
     end
-
   end
 end

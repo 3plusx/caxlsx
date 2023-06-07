@@ -1,15 +1,15 @@
-# encoding: UTF-8
+# frozen_string_literal: true
+
 module Axlsx
   # The Dxf class defines an incremental formatting record for use in Styles. The recommended way to manage styles for your workbook is with Styles#add_style
   # @see Styles#add_style
   class Dxf
-
     include Axlsx::OptionsParser
 
     # The order in which the child elements is put in the XML seems to
     # be important for Excel
-    CHILD_ELEMENTS = [:font, :numFmt, :fill, :alignment, :border, :protection]
-    #does not support extList (ExtensionList)
+    CHILD_ELEMENTS = [:font, :numFmt, :fill, :alignment, :border, :protection].freeze
+    # does not support extList (ExtensionList)
 
     # The cell alignment for this style
     # @return [CellAlignment]
@@ -44,7 +44,7 @@ module Axlsx
     # @option options [Font] font
     # @option options [CellAlignment] alignment
     # @option options [CellProtection] protection
-    def initialize(options={})
+    def initialize(options = {})
       parse_options options
     end
 
@@ -64,7 +64,7 @@ module Axlsx
     # Serializes the object
     # @param [String] str
     # @return [String]
-    def to_xml_string(str = '')
+    def to_xml_string(str = +'')
       str << '<dxf>'
       # Dxf elements have no attributes. All of the instance variables
       # are child elements.
@@ -73,7 +73,5 @@ module Axlsx
       end
       str << '</dxf>'
     end
-
   end
-
 end
